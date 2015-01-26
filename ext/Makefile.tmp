@@ -1,0 +1,9 @@
+CFLAGS = -I ../include
+ext.so:  ext_funcpublic.o
+	ld -o ext.so ext_public.o ext_funcpublic.o   
+ext_funcpublic.o:ext_public.o
+	cc -o $(CFLAGS) ext_funcpublic.o ext_funcpublic.c 
+ext_public.o:
+	cc -o $(CFLAGS) ext_public.o ext_public.c
+clean:
+	rm ext_public.o ext_funcpublic.o ext.soc
