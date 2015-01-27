@@ -19,6 +19,16 @@ int global_idle_timeout = 0;
 ext_func_handle_t sys_manage_func_list[] = {
     {"get_idle_timeout_threshold",1,(php_func_t)ext_get_idle_timeout_threshold},
     {"set_idle_timeout_threshold",2,(php_func_t)ext_set_idle_timeout_threshold},
+    {"get_afi_version_update_value",1,(php_func_t)ext_get_afi_version_update_value},
+    {"set_afi_version_update_value",2,(php_func_t)ext_set_afi_version_update_value},
+    {"get_afi_net_adaption_value",1,(php_func_t)ext_get_afi_net_adaption_value},
+    {"set_afi_net_adaption_value",2,(php_func_t)ext_set_afi_net_adaption_value},
+    {"get_afi_access_control_value",1,(php_func_t)ext_get_afi_access_control_value},
+    {"set_afi_access_control_value",2,(php_func_t)ext_set_afi_access_control_value},
+    {"get_wireless_global_country_code",1,(php_func_t)ext_get_wireless_global_country_code},
+    {"set_wireless_global_country_code",2,(php_func_t)ext_set_wireless_global_country_code},
+    {"get_wireless_global_auto_optim_policy",1,(php_func_t)ext_get_wireless_global_auto_optim_policy},
+    {"set_wireless_global_auto_optim_policy",2,(php_func_t)ext_set_wireless_global_auto_optim_policy},
     {"load_wireless_config",1,(php_func_t)ext_load_wireless_config},
     {"load_system_config",1,(php_func_t)ext_load_system_config},
 };
@@ -97,6 +107,67 @@ EXT_FUNCTION(ext_set_idle_timeout_threshold)/*返回1表示成功, 返回-1表示idle_time
 	RETURN_LONG(1);
 }
 
+EXT_FUNCTION(ext_get_afi_version_update_value)
+{
+    RETURN_LONG(1);
+}
+EXT_FUNCTION(ext_set_afi_version_update_value)
+{
+    char *version_update_stat = NULL;  
+    afc_config_s * afcconf = NULL;
+    int time_num = 0, IGNORE_UBSV ret = -1;
+    
+    ext_para_get(argc, argv, EXT_TYPE_STRING, &version_update_stat);
+    
+    if(NULL == version_update_stat)
+    {
+        RETURN_LONG(INPUT_PARA_NULL);
+    }
+    
+    afcconf = get_config_info();
+
+    if(afcconf)
+    {
+        strcpy(afcconf->afi_policy.version_update,version_update_stat);
+    }
+    save_config_info(afcconf);
+    
+    RETURN_LONG(1);
+}
+EXT_FUNCTION(ext_get_afi_net_adaption_value)
+{
+
+}
+EXT_FUNCTION(ext_set_afi_net_adaption_value)
+{
+
+}
+EXT_FUNCTION(ext_get_afi_access_control_value)
+{
+
+}
+EXT_FUNCTION(ext_set_afi_access_control_value)
+{
+
+}
+EXT_FUNCTION(ext_get_wireless_global_country_code)
+{
+
+}
+EXT_FUNCTION(ext_set_wireless_global_country_code)
+{
+
+}
+EXT_FUNCTION(ext_get_wireless_global_auto_optim_policy)
+{
+    
+}
+
+EXT_FUNCTION(ext_set_wireless_global_auto_optim_policy)
+{
+
+}
+
 int load_system_node_config(struct system_conf *system_node)
 {
     	
@@ -153,6 +224,11 @@ int load_wireless_global_config(struct wireless_global_conf * wireless_global)
     return 0;
 }
 
+int load_afi_policy_config(struct afi_policy_conf * afi_policy)
+{
+    ;
+    return 0;
+}
 int load_all_system_config()
 {    
 	afc_config_s * afcconf = NULL;
@@ -185,8 +261,7 @@ int load_all_wireless_config()
         load_wtps_config(afcconf->wtps);
         
         //load_wireless_global_config(&(afcconf->wireless_global));
-    }
-    return 0;
+    }              
 }
 
 EXT_FUNCTION(ext_load_system_config)
