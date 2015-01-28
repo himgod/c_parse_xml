@@ -29,6 +29,12 @@ ext_func_handle_t sys_manage_func_list[] = {
     {"set_wireless_global_country_code",2,(php_func_t)ext_set_wireless_global_country_code},
     {"get_wireless_global_auto_optim_policy",1,(php_func_t)ext_get_wireless_global_auto_optim_policy},
     {"set_wireless_global_auto_optim_policy",2,(php_func_t)ext_set_wireless_global_auto_optim_policy},
+    {"get_user_policy_auto_optim_policy",1,(php_func_t)ext_get_user_policy_auto_optim_policy},
+    {"set_user_policy_auto_optim_policy",2,(php_func_t)ext_set_user_policy_auto_optim_policy},
+    {"get_afi_blacklist_node",1,(php_func_t)ext_get_afi_blacklist_node},
+    {"set_afi_blacklist_node",2,(php_func_t)ext_get_afi_blacklist_node},
+    {"get_user_blacklist_node",1,(php_func_t)ext_get_afi_blacklist_node},
+    {"set_user_blacklist_node",2,(php_func_t)ext_get_afi_blacklist_node},
     {"load_wireless_config",1,(php_func_t)ext_load_wireless_config},
     {"load_system_config",1,(php_func_t)ext_load_system_config},
 };
@@ -115,7 +121,6 @@ EXT_FUNCTION(ext_set_afi_version_update_value)
 {
     char *version_update_stat = NULL;  
     afc_config_s * afcconf = NULL;
-    int time_num = 0, IGNORE_UBSV ret = -1;
     
     ext_para_get(argc, argv, EXT_TYPE_STRING, &version_update_stat);
     
@@ -140,30 +145,169 @@ EXT_FUNCTION(ext_get_afi_net_adaption_value)
 }
 EXT_FUNCTION(ext_set_afi_net_adaption_value)
 {
+    long net_adaption_flag = 0; 
+    afc_config_s * afcconf = NULL;
+    
+    ext_para_get(argc, argv, EXT_TYPE_LONG, &net_adaption_flag);
+    
+     if( net_adaption_flag != 0  && net_adaption_flag != 1)
+     {
+         RETURN_LONG(-1);
+     }
+    afcconf = get_config_info();
 
+    if(afcconf)
+    {
+        afcconf->afi_policy.net_adaption = (int)net_adaption_flag;
+    }
+    save_config_info(afcconf);
+    
+    RETURN_LONG(1);
 }
 EXT_FUNCTION(ext_get_afi_access_control_value)
 {
-
+    RETURN_LONG(1);
 }
 EXT_FUNCTION(ext_set_afi_access_control_value)
 {
+    long access_control_flag = 0; 
+    afc_config_s * afcconf = NULL;
+    
+    ext_para_get(argc, argv, EXT_TYPE_LONG, &access_control_flag);
+    
+    if( access_control_flag != 0 && access_control_flag != 1)
+    {
+        RETURN_LONG(-1);
+    }
+    afcconf = get_config_info();
 
+    if(afcconf)
+    {
+        afcconf->afi_policy.access_control = (BOOL)access_control_flag;
+    }
+    save_config_info(afcconf);
+    
+    RETURN_LONG(1);
 }
 EXT_FUNCTION(ext_get_wireless_global_country_code)
 {
-
+    RETURN_LONG(1);
 }
 EXT_FUNCTION(ext_set_wireless_global_country_code)
 {
+    char *country_code_str = NULL;  
+    afc_config_s * afcconf = NULL;
+    int country_code = 0;
+    ext_para_get(argc, argv, EXT_TYPE_STRING, &country_code_str);
+    
+    if(NULL == country_code_str)
+    {
+        RETURN_LONG(INPUT_PARA_NULL);
+    }
+    
 
+    country_code = strtoul(country_code_str,NULL,10);
+    
+    // if((time_num < 180)||(time_num > 65535))
+    // {
+    //     RETURN_LONG(-1);
+    // }
+    
+    afcconf = get_config_info();
+
+    if(afcconf)
+    {
+        afcconf->wireless_global.country_code = country_code;
+    }
+    save_config_info(afcconf);
+    
+    RETURN_LONG(1);
 }
 EXT_FUNCTION(ext_get_wireless_global_auto_optim_policy)
 {
-    
+    RETURN_LONG(1);
 }
 
 EXT_FUNCTION(ext_set_wireless_global_auto_optim_policy)
+{
+    char *auto_optim_policy = NULL;  
+    afc_config_s * afcconf = NULL;
+    
+    ext_para_get(argc, argv, EXT_TYPE_STRING, &auto_optim_policy);
+    
+    if(NULL == auto_optim_policy)
+    {
+        RETURN_LONG(INPUT_PARA_NULL);
+    }
+    
+    afcconf = get_config_info();
+
+    if(afcconf)
+    {
+        strcpy(afcconf->wireless_global.auto_optim_policy,auto_optim_policy);
+    }
+    save_config_info(afcconf);
+    
+    RETURN_LONG(1);
+
+}
+EXT_FUNCTION(ext_get_user_policy_auto_optim_policy)
+{
+    RETURN_LONG(1);
+}
+EXT_FUNCTION(ext_set_user_policy_auto_optim_policy)
+{
+    char *auto_optim_policy = NULL;  
+    afc_config_s * afcconf = NULL;
+    
+    ext_para_get(argc, argv, EXT_TYPE_STRING, &auto_optim_policy);
+    
+    if(NULL == auto_optim_policy)
+    {
+        RETURN_LONG(INPUT_PARA_NULL);
+    }
+    
+    afcconf = get_config_info();
+
+    if(afcconf)
+    {
+        strcpy(afcconf->user_policy.auto_optim_policy,auto_optim_policy);
+    }
+    save_config_info(afcconf);
+    
+    RETURN_LONG(1);
+}
+EXT_FUNCTION(ext_get_afi_blacklist_node)
+{
+    RETURN_LONG(1);
+}
+EXT_FUNCTION(ext_set_afi_blacklist_node)
+{
+    char *afi_mac_name = NULL;  
+    afc_config_s * afcconf = NULL;
+    
+    ext_para_get(argc, argv, EXT_TYPE_STRING, &afi_mac_name);
+    
+    if(NULL == afi_mac_name)
+    {
+        RETURN_LONG(INPUT_PARA_NULL);
+    }
+    
+    afcconf = get_config_info();
+
+    if(afcconf)
+    {
+        strcpy(afcconf->afi_blist.blist_conf.tail->mac,afi_mac_name);
+    }
+    save_config_info(afcconf);
+    
+    RETURN_LONG(1);
+}
+EXT_FUNCTION(ext_get_user_blacklist_node)
+{
+    RETURN_LONG(1);
+}
+EXT_FUNCTION(ext_set_user_blacklist_node)
 {
 
 }

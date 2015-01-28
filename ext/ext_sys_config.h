@@ -13,6 +13,7 @@ void ext_sys_manage_handle(int argc, zval ***argv, zval *return_value);
 
 EXT_FUNCTION(ext_get_idle_timeout_threshold);
 EXT_FUNCTION(ext_set_idle_timeout_threshold);
+
 EXT_FUNCTION(ext_set_afi_version_update_value);
 EXT_FUNCTION(ext_get_afi_version_update_value);
 EXT_FUNCTION(ext_set_afi_net_adaption_value);
@@ -23,6 +24,13 @@ EXT_FUNCTION(ext_get_wireless_global_country_code);
 EXT_FUNCTION(ext_set_wireless_global_country_code);
 EXT_FUNCTION(ext_get_wireless_global_auto_optim_policy);
 EXT_FUNCTION(ext_set_wireless_global_auto_optim_policy);
+EXT_FUNCTION(ext_get_user_policy_auto_optim_policy);
+EXT_FUNCTION(ext_set_user_policy_auto_optim_policy);
+EXT_FUNCTION(ext_get_afi_blacklist_node);
+EXT_FUNCTION(ext_set_afi_blacklist_node);
+EXT_FUNCTION(ext_get_user_blacklist_node);
+EXT_FUNCTION(ext_set_user_blacklist_node);
+
 EXT_FUNCTION(ext_load_wireless_config);
 EXT_FUNCTION(ext_load_system_config);
 
