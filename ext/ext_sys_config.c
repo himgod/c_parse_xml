@@ -31,10 +31,10 @@ ext_func_handle_t sys_manage_func_list[] = {
     {"set_wireless_global_auto_optim_policy",2,(php_func_t)ext_set_wireless_global_auto_optim_policy},
     {"get_user_policy_auto_optim_policy",1,(php_func_t)ext_get_user_policy_auto_optim_policy},
     {"set_user_policy_auto_optim_policy",2,(php_func_t)ext_set_user_policy_auto_optim_policy},
-    {"get_afi_blacklist_node",1,(php_func_t)ext_get_afi_blacklist_node},
-    {"set_afi_blacklist_node",2,(php_func_t)ext_get_afi_blacklist_node},
-    {"get_user_blacklist_node",1,(php_func_t)ext_get_afi_blacklist_node},
-    {"set_user_blacklist_node",2,(php_func_t)ext_get_afi_blacklist_node},
+    {"remove_one_afi_blacklist_mac_node",2,(php_func_t)ext_remove_one_afi_blacklist_mac_node},
+    {"add_one_afi_blacklist_mac_node",2,(php_func_t)ext_add_one_afi_blacklist_mac_node},
+    {"remove_one_user_blacklist_mac_node",2,(php_func_t)ext_remove_one_user_blacklist_mac_node},
+    {"add_one_user_blacklist_mac_node",2,(php_func_t)ext_add_one_user_blacklist_mac_node},
     {"load_wireless_config",1,(php_func_t)ext_load_wireless_config},
     {"load_system_config",1,(php_func_t)ext_load_system_config},
 };
@@ -277,14 +277,14 @@ EXT_FUNCTION(ext_set_user_policy_auto_optim_policy)
     
     RETURN_LONG(1);
 }
-EXT_FUNCTION(ext_get_afi_blacklist_node)
+EXT_FUNCTION(ext_remove_one_afi_blacklist_mac_node)
 {
-    RETURN_LONG(1);
-}
-EXT_FUNCTION(ext_set_afi_blacklist_node)
-{
-    char *afi_mac_name = NULL;  
+   char *afi_mac_name = NULL;  
     afc_config_s * afcconf = NULL;
+    unsigned char tmpMac[MAC_LEN] = {0};
+    char tmpValue[MID_STRING_LEN] = {0};
+    char* tmpStr = tmpValue;
+    int i = 0;
     
     ext_para_get(argc, argv, EXT_TYPE_STRING, &afi_mac_name);
     
@@ -293,23 +293,129 @@ EXT_FUNCTION(ext_set_afi_blacklist_node)
         RETURN_LONG(INPUT_PARA_NULL);
     }
     
+    strncpy(tmpStr,afi_mac_name,MID_STRING_LEN-1);
+    tmpStr = strtok(tmpStr,":");
+    while(tmpStr && i < MAC_LEN)
+    {
+        tmpMac[i] = (unsigned char)strtoul(tmpStr,NULL,16);
+        tmpStr = strtok(NULL,":");
+        i++;
+    }
     afcconf = get_config_info();
 
     if(afcconf)
     {
-        strcpy(afcconf->afi_blist.blist_conf.tail->mac,afi_mac_name);
+        // strcpy(afcconf->afi_blist.blist_conf.tail->mac,afi_mac_name);
+        remove_node(&(afcconf->afi_blist.blist_conf),(unsigned char *)tmpMac);
     }
     save_config_info(afcconf);
     
     RETURN_LONG(1);
 }
-EXT_FUNCTION(ext_get_user_blacklist_node)
+EXT_FUNCTION(ext_add_one_afi_blacklist_mac_node)
 {
+    char *afi_mac_name = NULL;  
+    afc_config_s * afcconf = NULL;
+    unsigned char tmpMac[MAC_LEN] = {0};
+    char tmpValue[MID_STRING_LEN] = {0};
+    char* tmpStr = tmpValue;
+    int i = 0;
+    
+    ext_para_get(argc, argv, EXT_TYPE_STRING, &afi_mac_name);
+    
+    if(NULL == afi_mac_name)
+    {
+        RETURN_LONG(INPUT_PARA_NULL);
+    }
+    
+    strncpy(tmpStr,afi_mac_name,MID_STRING_LEN-1);
+    tmpStr = strtok(tmpStr,":");
+    while(tmpStr && i < MAC_LEN)
+    {
+        tmpMac[i] = (unsigned char)strtoul(tmpStr,NULL,16);
+        tmpStr = strtok(NULL,":");
+        i++;
+    }
+    afcconf = get_config_info();
+
+    if(afcconf)
+    {
+        // strcpy(afcconf->afi_blist.blist_conf.tail->mac,afi_mac_name);
+        insert_node(&(afcconf->afi_blist.blist_conf),(unsigned char *)tmpMac);
+    }
+    save_config_info(afcconf);
+    
     RETURN_LONG(1);
 }
-EXT_FUNCTION(ext_set_user_blacklist_node)
+EXT_FUNCTION(ext_remove_one_user_blacklist_mac_node)
 {
+    char *user_mac_name = NULL;  
+    afc_config_s * afcconf = NULL;
+    unsigned char tmpMac[MAC_LEN] = {0};
+    char tmpValue[MID_STRING_LEN] = {0};
+    char* tmpStr = tmpValue;
+    int i = 0;
+    
+    ext_para_get(argc, argv, EXT_TYPE_STRING, &user_mac_name);
+    
+    if(NULL == user_mac_name)
+    {
+        RETURN_LONG(INPUT_PARA_NULL);
+    }
+    
+    strncpy(tmpStr,user_mac_name,MID_STRING_LEN-1);
+    tmpStr = strtok(tmpStr,":");
+    while(tmpStr && i < MAC_LEN)
+    {
+        tmpMac[i] = (unsigned char)strtoul(tmpStr,NULL,16);
+        tmpStr = strtok(NULL,":");
+        i++;
+    }
+    afcconf = get_config_info();
 
+    if(afcconf)
+    {
+        // strcpy(afcconf->afi_blist.blist_conf.tail->mac,afi_mac_name);
+        remove_node(&(afcconf->user_blist.blist_conf),(unsigned char *)tmpMac);
+    }
+    save_config_info(afcconf);
+    
+    RETURN_LONG(1);
+}
+EXT_FUNCTION(ext_add_one_user_blacklist_mac_node)
+{
+    char *user_mac_name = NULL;  
+    afc_config_s * afcconf = NULL;
+    unsigned char tmpMac[MAC_LEN] = {0};
+    char tmpValue[MID_STRING_LEN] = {0};
+    char* tmpStr = tmpValue;
+    int i = 0;
+    
+    ext_para_get(argc, argv, EXT_TYPE_STRING, &user_mac_name);
+    
+    if(NULL == user_mac_name)
+    {
+        RETURN_LONG(INPUT_PARA_NULL);
+    }
+    
+    strncpy(tmpStr,user_mac_name,MID_STRING_LEN-1);
+    tmpStr = strtok(tmpStr,":");
+    while(tmpStr && i < MAC_LEN)
+    {
+        tmpMac[i] = (unsigned char)strtoul(tmpStr,NULL,16);
+        tmpStr = strtok(NULL,":");
+        i++;
+    }
+    afcconf = get_config_info();
+
+    if(afcconf)
+    {
+        // strcpy(afcconf->afi_blist.blist_conf.tail->mac,afi_mac_name);
+        insert_node(&(afcconf->user_blist.blist_conf),(unsigned char *)tmpMac);
+    }
+    save_config_info(afcconf);
+    
+    RETURN_LONG(1);
 }
 
 int load_system_node_config(struct system_conf *system_node)

@@ -247,6 +247,10 @@ struct wtp_conf{
 	char wtp_model[SHORT_STRING_LEN];
 	char wtp_name[MID_STRING_LEN];
 	char wtp_mac[SHORT_STRING_LEN];
+	char mapname[MID_STRING_LEN];
+	unsigned int mapleft;
+	unsigned int maptop;
+	BOOL maplock;
 	struct radio_conf *radios[MAX_RADIO_NUM];
 	struct network_conf network;
 };
@@ -283,10 +287,6 @@ struct wtp_conf{
 #define CONF_INTERFACE_SECOND_DNS "intf_seconddns"
 #define CONF_USERGROUP "user_group"
 #define CONF_USERGROUP_ID "group_id"
-
-
-
-
 #define CONF_GUESTPOLICY "guest_policy"
 #define CONF_GUESTPOLICY_ID "policy_id"
 #define CONF_BLOCKLIST "block_list"
@@ -337,6 +337,10 @@ struct wtp_conf{
 #define CONF_WTP_NAME "wtp_name"
 #define CONF_WTP_MAC "wtp_mac"
 #define CONF_WTP_SERVICE "wtp_service"
+#define CONF_WTP_MAPNAME "mapname"
+#define CONF_WTP_MAPLEFT "mapleft"
+#define CONF_WTP_MAPTOP "maptop"
+#define CONF_WTP_MAPLOCK "maplock"
 #define CONF_WTP_RADIO "radio"
 #define CONF_WTP_RADIO_LOCAL_ID "local_id"
 #define CONF_WTP_RADIO_CHANNEL "channel"

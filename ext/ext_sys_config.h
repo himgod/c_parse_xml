@@ -26,10 +26,11 @@ EXT_FUNCTION(ext_get_wireless_global_auto_optim_policy);
 EXT_FUNCTION(ext_set_wireless_global_auto_optim_policy);
 EXT_FUNCTION(ext_get_user_policy_auto_optim_policy);
 EXT_FUNCTION(ext_set_user_policy_auto_optim_policy);
-EXT_FUNCTION(ext_get_afi_blacklist_node);
-EXT_FUNCTION(ext_set_afi_blacklist_node);
-EXT_FUNCTION(ext_get_user_blacklist_node);
-EXT_FUNCTION(ext_set_user_blacklist_node);
+
+EXT_FUNCTION(ext_remove_one_afi_blacklist_mac_node);
+EXT_FUNCTION(ext_add_one_afi_blacklist_mac_node);
+EXT_FUNCTION(ext_remove_one_user_blacklist_mac_node);
+EXT_FUNCTION(ext_add_one_user_blacklist_mac_node);
 
 EXT_FUNCTION(ext_load_wireless_config);
 EXT_FUNCTION(ext_load_system_config);

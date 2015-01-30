@@ -424,10 +424,7 @@ BOOL remove_node(struct block_list_conf * block_hash, unsigned char * mac)
             {
                 preNode->hnext = tmpNode->hnext;
             }
-			if(block_hash->head == tmpNode)
-			{
-				block_hash->head = tmpNode->next;				
-			}
+			
 			if(block_hash->tail == tmpNode)
 			{
     			struct blist_node * tmpNodePtr = block_hash->head;
@@ -442,11 +439,17 @@ BOOL remove_node(struct block_list_conf * block_hash, unsigned char * mac)
 						if(tmpNodePtr->next == tmpNode)
 						{
 							block_hash->tail =  tmpNodePtr;
+							//update
+							tmpNodePtr->next = NULL;
 							break;
 						}
 						tmpNodePtr = tmpNodePtr->next;
 					}
 				}
+			}
+			if(block_hash->head == tmpNode)
+			{
+				block_hash->head = tmpNode->next;				
 			}
             free(tmpNode);
             block_hash->num--;
@@ -650,7 +653,6 @@ void get_afi_block_list_conf(xmlNodePtr pcurnode, afc_config_s * afcconf)
 void get_afi_blacklist_conf(xmlNodePtr pcurnode, afc_config_s * afcconf)
 {
 	xmlNodePtr testnode = NULL;
-    xmlChar *value = NULL;
 
 	if(!pcurnode || !afcconf)
 	{
@@ -1581,7 +1583,35 @@ void get_wtp_conf(xmlNodePtr pcurnode, afc_config_s * afcconf)
 		{
 			value = xmlNodeGetContent(testnode);	
             DEBUG_VALUE(testnode);
-			wtp_node->wtp_service = (int)strtoul((char *)value, NULL, 10);	
+			wtp_node->wtp_service = (!strcmp((char *)value, "true"));	
+			xmlFree(value);
+		}
+		else if ((!xmlStrcmp(testnode->name, BAD_CAST  CONF_WTP_MAPNAME)))
+		{
+			value = xmlNodeGetContent(testnode);
+            DEBUG_VALUE(testnode);
+			strncpy(wtp_node->mapname, (char *)value, MID_STRING_LEN-1);	
+			xmlFree(value);
+		}
+		else if ((!xmlStrcmp(testnode->name, BAD_CAST  CONF_WTP_MAPLEFT )))  
+		{
+			value = xmlNodeGetContent(testnode);	
+            DEBUG_VALUE(testnode);
+			wtp_node->mapleft = (unsigned int)strtoul((char *)value, NULL, 10);	
+			xmlFree(value);
+		}
+		else if ((!xmlStrcmp(testnode->name, BAD_CAST  CONF_WTP_MAPTOP )))  
+		{
+			value = xmlNodeGetContent(testnode);	
+            DEBUG_VALUE(testnode);
+			wtp_node->maptop = (unsigned int)strtoul((char *)value, NULL, 10);	
+			xmlFree(value);
+		}
+		else if ((!xmlStrcmp(testnode->name, BAD_CAST  CONF_WTP_MAPLOCK)))  
+		{
+			value = xmlNodeGetContent(testnode);	
+            DEBUG_VALUE(testnode);
+			wtp_node->maplock = (!strcmp((char *)value, "true"));	
 			xmlFree(value);
 		}
         else if ((!xmlStrcmp(testnode->name, BAD_CAST  CONF_WTP_RADIO )))   
@@ -2093,8 +2123,8 @@ void set_afi_block_list_conf(xmlNodePtr pcurnode, afc_config_s * afcconf)
 	        tmp_bnode->mac[0], tmp_bnode->mac[1], tmp_bnode->mac[2], 
 	        tmp_bnode->mac[3], tmp_bnode->mac[4], tmp_bnode->mac[5]);
         tmp_node = xmlNewTextChild(pcurnode, NULL, BAD_CAST CONF_BLOCKLIST_MAC, 
-            BAD_CAST tmpMacStr); 
-		//set_xml_node_value(tmp_node, (char *)tmpMacStr);
+            BAD_CAST ""); 
+		set_xml_node_value(tmp_node, (char *)tmpMacStr);
 		tmp_bnode = tmp_bnode->next;
 	}
 	return;
@@ -2460,6 +2490,14 @@ void set_wtp_detail_conf(xmlNodePtr pcurnode, struct wtp_conf *wtp_node)
 	set_xml_node_value(tmp_node, (char *)wtp_node->wtp_mac);
 	tmp_node = xmlNewTextChild(pcurnode, NULL, BAD_CAST CONF_WTP_SERVICE, BAD_CAST ""); 
 	set_xml_node_value_from_bool(tmp_node, (BOOL)wtp_node->wtp_service);
+	tmp_node = xmlNewTextChild(pcurnode, NULL, BAD_CAST CONF_WTP_MAPNAME, BAD_CAST ""); 
+	set_xml_node_value(tmp_node, (char *)wtp_node->mapname);
+	tmp_node = xmlNewTextChild(pcurnode, NULL, BAD_CAST CONF_WTP_MAPLEFT, BAD_CAST ""); 
+	set_xml_node_value_from_int(tmp_node, (unsigned int)wtp_node->mapleft);
+	tmp_node = xmlNewTextChild(pcurnode, NULL, BAD_CAST CONF_WTP_MAPTOP, BAD_CAST ""); 
+	set_xml_node_value_from_int(tmp_node, (unsigned int)wtp_node->maptop);
+	tmp_node = xmlNewTextChild(pcurnode, NULL, BAD_CAST CONF_WTP_MAPLOCK, BAD_CAST ""); 
+	set_xml_node_value_from_bool(tmp_node, (BOOL)wtp_node->maplock);
 	for(i = START_RADIO_NUM; i < MAX_RADIO_NUM; i++)
 	{
 	    radio_node = wtp_node->radios[i];
